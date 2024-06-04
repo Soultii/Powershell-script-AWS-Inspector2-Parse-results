@@ -2,6 +2,9 @@
 #Import the Inspector2 powershell module to be able to create the following object. Needed for -FilterCriteria_Severity that only understand Amazon.Inspector2.Model.StringFilter object type.
 Import-Module AWS.Tools.Inspector2
 
+#Set the default location to script location
+Set-Location -Path $PSScriptRoot
+
 #Create an Amazon.Inspector2.StringComparison object needed for Amazon.Inspector2.Model.StringFilter object.
 $titi = [Amazon.Inspector2.StringComparison]::new("EQUALS")
 
@@ -51,10 +54,10 @@ while (-not (Get-S3Object -BucketName "S3 BUCKET NAME where the" -KeyPrefix $jso
     start-sleep -Seconds 60
 } 
 # #Download the JSON file from the S3 bucket.
-Copy-S3Object -BucketName "axawsfr1m-s3-inspector-971842448392" -Key "$json_file.json" -LocalFile "$PSScriptRoot\inspector.json"
+Copy-S3Object -BucketName "axawsfr1m-s3-inspector-971842448392" -Key "$json_file.json" -LocalFile "inspector.json"
 
 #Read the JSON file. Deleting some problematic characters
-$json = Get-Content -Path "$PSScriptRoot\inspector.json" | ForEach-Object{$_ -replace '{"findings":'} | ForEach-Object{$_ -replace ';','.'} | ForEach-Object{$_ -replace '\\n', ' '} | ForEach-Object{$_ -replace '\\"', '*'} | ForEach-Object{$_ -replace '\\'}
+$json = Get-Content -Path "inspector.json" | ForEach-Object{$_ -replace '{"findings":'} | ForEach-Object{$_ -replace ';','.'} | ForEach-Object{$_ -replace '\\n', ' '} | ForEach-Object{$_ -replace '\\"', '*'} | ForEach-Object{$_ -replace '\\'}
 $json[-1] = $json[-1] -replace '.$'
 $json = $json | ConvertFrom-Json
 
